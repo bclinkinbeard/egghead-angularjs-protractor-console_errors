@@ -8,6 +8,13 @@ describe('hello-protractor', function () {
       page.get();
   });
 
+  afterEach(function () {
+    browser.manage().logs().get('browser').then(function (browserLog) {
+      expect(browserLog.length).toEqual(0);
+      if (browserLog.length) console.error('log: ' + JSON.stringify(browserLog));
+    });
+  });
+
   describe('index', function () {
     it('should display the correct title', function () {
       expect(page.getTitle()).toBe('hello protractor');

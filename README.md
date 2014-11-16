@@ -1,11 +1,10 @@
-egghead-angularjs-protractor-screenshots
-========================================
+egghead-angularjs-protractor-console_errors
+===========================================
 
-Code for the Better Protractor Testing with Screenshots video on egghead.io
+Code for the egghead.io video Detecting Console Errors in Protractor Tests
 
 ```js
-var IndexPage = require('./IndexPage'),
-    capture = require('../screenshot');
+var IndexPage = require('./IndexPage');
 
 describe('hello-protractor', function () {
 
@@ -16,7 +15,10 @@ describe('hello-protractor', function () {
   });
 
   afterEach(function () {
-    capture.takeScreenshot(jasmine.getEnv().currentSpec);
+    browser.manage().logs().get('browser').then(function (browserLog) {
+      expect(browserLog.length).toEqual(0);
+      if (browserLog.length) console.error('log: ' + JSON.stringify(browserLog));
+    });
   });
 
   describe('index', function () {
@@ -31,28 +33,4 @@ describe('hello-protractor', function () {
     });
   });
 });
-```
-
-```js
-var fs = require('fs');
-
-function capture (spec) {
-	var name = spec.description.split(' ').join('_');
-
-	browser.takeScreenshot().then(function (png) {
-		var stream = fs.createWriteStream('screenshots/' + name + '.png');
-		stream.write(new Buffer(png, 'base64'));
-		stream.end();
-	});
-}
-
-exports.takeScreenshot = function (spec) {
-	capture(spec);
-};
-
-exports.takeScreenshotOnFailure = function (spec) {
-	if (spec.results().passed()) return;
-
-	capture(spec);
-};
 ```
